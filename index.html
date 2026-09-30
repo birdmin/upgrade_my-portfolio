@@ -39,7 +39,7 @@
 
         .container { 
             width: 100%; 
-            max-width: 960px; 
+            max-width: 1200px; 
             background: var(--card-bg); 
             padding: 40px; 
             border-radius: 16px; 
@@ -85,22 +85,19 @@
             gap: 8px;
         }
 
-        /* 1, 2, 3 항목을 가로로 3등분하여 배치하는 그리드 설정 */
+        /* [핵심] 기본 PC 화면: Flex를 사용하여 무조건 가로 1줄(1x3)로 나열 */
         .grid { 
-            display: grid; 
-            grid-template-columns: repeat(3, 1fr); 
+            display: flex;
+            flex-direction: row;
             gap: 16px; 
             margin-bottom: 35px; 
+            width: 100%;
         }
 
-        /* 모바일 등 작은 화면에서는 가로 반응형 분기 처리 */
-        @media (max-width: 768px) {
-            .grid {
-                grid-template-columns: 1fr;
-            }
-        }
-
+        /* 3개의 카드가 정확히 동등한 너비(1:1:1)를 나눠 가지도록 설정 */
         .card { 
+            flex: 1;
+            min-width: 0; /* 내용이 길어도 자리를 이탈하거나 줄바꿈되지 않게 방지 */
             background: #f8fafc; 
             padding: 20px; 
             border-radius: 12px; 
@@ -110,6 +107,13 @@
             justify-content: space-between; 
             border: 1px solid var(--border-color);
             transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        /* [핵심] 모바일 및 화면 너비가 좁을 때: 세로 1열 정렬 */
+        @media (max-width: 768px) {
+            .grid {
+                flex-direction: column;
+            }
         }
 
         .card:hover {
