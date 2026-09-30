@@ -145,6 +145,43 @@
     var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFibXlpbWt5enhuZnFna2Z5b3FjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3NDA4NTIsImV4cCI6MjEwNjMxNjg1Mn0.eDlx9irK4wKuYv3HJ7SSwurZHF6ikw2LfAoZEnFv3og';
     var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
+    // Tab 키 이동을 특정 요소 내부로 제한하는 Tab Trapping 구현
+    document.addEventListener('keydown', function(e) {
+        if (e.key === 'Tab' || e.keyCode === 9) {
+            // tab-target 클래스를 가진 활성화된 요소들만 수집 (display: none 요소 제외)
+            var targets = Array.from(document.querySelectorAll('.tab-target')).filter(function(el) {
+                return el.offsetParent !== null;
+            });
+
+            if (targets.length === 0) return;
+
+            var firstTarget = targets[0];
+            var lastTarget = targets[targets.length - 1];
+
+            // 현재 포커스 위치가 지정된 타겟 외부에 있거나 없는 경우
+            if (!targets.includes(document.activeElement)) {
+                e.preventDefault();
+                firstTarget.focus();
+                return;
+            }
+
+            // Shift + Tab 눌렀을 때 (역방향)
+            if (e.shiftKey) {
+                if (document.activeElement === firstTarget) {
+                    e.preventDefault();
+                    lastTarget.focus();
+                }
+            } 
+            // Tab 눌렀을 때 (정방향)
+            else {
+                if (document.activeElement === lastTarget) {
+                    e.preventDefault();
+                    firstTarget.focus();
+                }
+            }
+        }
+    });
+
     function toggleDetail(id, btn) {
         var content = document.getElementById(id);
         var isExpanded = btn.getAttribute('aria-expanded') === 'true';
