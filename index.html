@@ -4,181 +4,35 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>김경민 | 보안 전문가 포트폴리오</title>
+    <!-- Supabase JS SDK 불러오기 -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-        }
-        body {
-            font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif;
-            line-height: 1.5;
-            color: #212529;
-            background-color: #f8f9fa;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            padding: 20px;
-        }
-        .container {
-            width: 100%;
-            max-width: 900px;
-            background: #ffffff;
-            padding: 30px 40px;
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
-            overflow: hidden;
-        }
-        header {
-            border-bottom: 2px solid #0056b3;
-            padding-bottom: 15px;
-            margin-bottom: 20px;
-        }
-        h1 {
-            font-size: 1.8rem;
-            color: #111111;
-            margin-bottom: 5px;
-        }
-        .intro {
-            font-size: 1rem;
-            color: #495057;
-        }
-        h2 {
-            font-size: 1.3rem;
-            color: #0056b3;
-            margin-bottom: 12px;
-        }
-        .grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-        .card {
-            background: #f1f3f5;
-            padding: 15px;
-            border-radius: 8px;
-            font-size: 0.9rem;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-        h3 {
-            font-size: 1.05rem;
-            margin-bottom: 6px;
-            color: #111111;
-        }
-        .card p {
-            color: #343a40;
-            margin-bottom: 4px;
-        }
-
-        /* 버튼 기본 스타일 및 2초 트랜지션 */
-        .toggle-btn {
-            display: block;
-            background-color: #0056b3;
-            color: #ffffff;
-            border: 2px solid #0056b3;
-            padding: 8px 14px;
-            font-size: 0.85rem;
-            font-weight: bold;
-            border-radius: 6px;
-            cursor: pointer;
-            margin-top: 10px;
-            width: 100%;
-            text-align: center;
-            transition: all 2s ease-in-out;
-        }
-        .toggle-btn:hover {
-            background-color: #003d80;
-        }
-
-        .details-content {
-            margin-top: 10px;
-            padding: 10px;
-            background: #ffffff;
-            border-left: 3px solid #0056b3;
-            border-radius: 4px;
-            display: none;
-        }
-        .details-content.active {
-            display: block;
-        }
-
-        .evidence-box {
-            background: #e7f5ff;
-            border-left: 4px solid #1c7ed6;
-            padding: 15px;
-            border-radius: 4px;
-            font-size: 0.95rem;
-            margin-bottom: 25px;
-        }
-
-        .evidence-box a {
-            color: #0b7285;
-            font-weight: bold;
-            text-decoration: underline;
-            transition: all 2s ease-in-out;
-        }
-
-        /* 비공개 영역 (패스키 전용) 스타일 */
-        .private-section {
-            margin-top: 30px;
-            border: 2px dashed #d9480f;
-            padding: 20px;
-            border-radius: 8px;
-            background-color: #fff4e6;
-        }
-        .private-section h2 {
-            color: #d9480f;
-        }
-        .passkey-btn {
-            background-color: #d9480f;
-            border-color: #d9480f;
-        }
-        .passkey-btn:hover {
-            background-color: #b83200;
-        }
-
-        /* 2초 동안 테두리와 그림자가 서서히 나타나는 키프레임 정의 */
-        @keyframes slowFocus {
-            0% {
-                outline: 1px solid rgba(217, 72, 15, 0.1);
-                outline-offset: 0px;
-                box-shadow: 0 0 0 0px rgba(217, 72, 15, 0);
-                background-color: #0056b3;
-            }
-            100% {
-                outline: 5px solid #d9480f;
-                outline-offset: 5px;
-                box-shadow: 0 0 0 8px rgba(217, 72, 15, 0.4);
-                background-color: #d9480f;
-            }
-        }
-
-        /* Tab 키 포커스 시 2초간 slowFocus 애니메이션 실행 */
-        a:focus, a:focus-visible,
-        button:focus, button:focus-visible {
-            animation: slowFocus 2s forwards ease-in-out !important;
-        }
-
-        /* T01-C22: OS에서 '동작 줄이기' 활성화 시 2초 애니메이션 무효화(0초 적용) */
-        @media (prefers-reduced-motion: reduce) {
-            *, ::before, ::after {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-                scroll-behavior: auto !important;
-            }
-            a:focus, a:focus-visible,
-            button:focus, button:focus-visible {
-                animation: none !important;
-                outline: 4px solid #d9480f !important;
-                outline-offset: 4px !important;
-                background-color: #d9480f !important;
-            }
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif; line-height: 1.5; color: #212529; background-color: #f8f9fa; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .container { width: 100%; max-width: 900px; background: #ffffff; padding: 30px 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); overflow: hidden; }
+        header { border-bottom: 2px solid #0056b3; padding-bottom: 15px; margin-bottom: 20px; }
+        h1 { font-size: 1.8rem; color: #111111; margin-bottom: 5px; }
+        .intro { font-size: 1rem; color: #495057; }
+        h2 { font-size: 1.3rem; color: #0056b3; margin-bottom: 12px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .card { background: #f1f3f5; padding: 15px; border-radius: 8px; font-size: 0.9rem; display: flex; flex-direction: column; justify-content: space-between; }
+        h3 { font-size: 1.05rem; margin-bottom: 6px; color: #111111; }
+        .card p { color: #343a40; margin-bottom: 4px; }
+        .toggle-btn { display: block; background-color: #0056b3; color: #ffffff; border: 2px solid #0056b3; padding: 8px 14px; font-size: 0.85rem; font-weight: bold; border-radius: 6px; cursor: pointer; margin-top: 10px; width: 100%; text-align: center; transition: all 2s ease-in-out; }
+        .toggle-btn:hover { background-color: #003d80; }
+        .details-content { margin-top: 10px; padding: 10px; background: #ffffff; border-left: 3px solid #0056b3; border-radius: 4px; display: none; }
+        .details-content.active { display: block; }
+        .evidence-box { background: #e7f5ff; border-left: 4px solid #1c7ed6; padding: 15px; border-radius: 4px; font-size: 0.95rem; margin-bottom: 25px; }
+        .evidence-box a { color: #0b7285; font-weight: bold; text-decoration: underline; transition: all 2s ease-in-out; }
+        .private-section { margin-top: 30px; border: 2px dashed #d9480f; padding: 20px; border-radius: 8px; background-color: #fff4e6; }
+        .private-section h2 { color: #d9480f; }
+        .passkey-btn { background-color: #d9480f; border-color: #d9480f; }
+        .passkey-btn:hover { background-color: #b83200; }
+        .reg-btn { background-color: #2b8a3e; border-color: #2b8a3e; margin-bottom: 10px; }
+        .reg-btn:hover { background-color: #2b8a3e; }
+        @keyframes slowFocus { 0% { outline: 1px solid rgba(217, 72, 15, 0.1); outline-offset: 0px; box-shadow: 0 0 0 0px rgba(217, 72, 15, 0); background-color: #0056b3; } 100% { outline: 5px solid #d9480f; outline-offset: 5px; box-shadow: 0 0 0 8px rgba(217, 72, 15, 0.4); background-color: #d9480f; } }
+        a:focus, a:focus-visible, button:focus, button:focus-visible { animation: slowFocus 2s forwards ease-in-out !important; }
+        @media (prefers-reduced-motion: reduce) { *, ::before, ::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; } a:focus, a:focus-visible, button:focus, button:focus-visible { animation: none !important; outline: 4px solid #d9480f !important; outline-offset: 4px !important; background-color: #d9480f !important; } }
     </style>
 </head>
 <body>
@@ -192,7 +46,6 @@
     <main>
         <h2>주요 활동 및 역량</h2>
         <div class="grid">
-            <!-- 1번 카드 -->
             <article class="card">
                 <div>
                     <h3>1. 웹 보안 취약점 진단</h3>
@@ -201,9 +54,7 @@
                     <p><strong>결과:</strong> 주요 취약점 원인 분석 및 대응 방안 정리</p>
                 </div>
                 <div>
-                    <button type="button" class="toggle-btn tab-target" aria-expanded="false" aria-controls="detail-1" onclick="toggleDetail('detail-1', this)">
-                        상세 진단 항목 보기 ▼
-                    </button>
+                    <button type="button" class="toggle-btn tab-target" aria-expanded="false" aria-controls="detail-1" onclick="toggleDetail('detail-1', this)">상세 진단 항목 보기 ▼</button>
                     <div id="detail-1" class="details-content">
                         <p>• SQL Injection (인증 우회, 데이터 추출)</p>
                         <p>• Cross-Site Scripting (XSS)</p>
@@ -213,7 +64,6 @@
                 </div>
             </article>
 
-            <!-- 2번 카드 -->
             <article class="card">
                 <div>
                     <h3>2. 네트워크 및 CS 역량</h3>
@@ -222,9 +72,7 @@
                     <p><strong>결과:</strong> 클라이언트-서버 간 데이터 흐름 및 보안 위협 파악 역량 확보</p>
                 </div>
                 <div>
-                    <button type="button" class="toggle-btn tab-target" aria-expanded="false" aria-controls="detail-2" onclick="toggleDetail('detail-2', this)">
-                        학습 세부 내용 보기 ▼
-                    </button>
+                    <button type="button" class="toggle-btn tab-target" aria-expanded="false" aria-controls="detail-2" onclick="toggleDetail('detail-2', this)">학습 세부 내용 보기 ▼</button>
                     <div id="detail-2" class="details-content">
                         <p>• HTTP/HTTPS 프로토콜 동작 원리 분석</p>
                         <p>• Wireshark 활용 트래픽 패킷 분석</p>
@@ -233,7 +81,6 @@
                 </div>
             </article>
 
-            <!-- 3번 카드 -->
             <article class="card">
                 <div>
                     <h3>3. 디버깅 및 문제 해결</h3>
@@ -242,9 +89,7 @@
                     <p><strong>결과:</strong> 시스템 오류의 신속한 해결 및 웹 구성 알고리즘 원리 습득</p>
                 </div>
                 <div>
-                    <button type="button" class="toggle-btn tab-target" aria-expanded="false" aria-controls="detail-3" onclick="toggleDetail('detail-3', this)">
-                        해결 사례 보기 ▼
-                    </button>
+                    <button type="button" class="toggle-btn tab-target" aria-expanded="false" aria-controls="detail-3" onclick="toggleDetail('detail-3', this)">해결 사례 보기 ▼</button>
                     <div id="detail-3" class="details-content">
                         <p>• AI 프롬프트 기반 코드 에러 원인 즉시 분석</p>
                         <p>• DB 커넥션 및 웹 서버 설정 디버깅</p>
@@ -258,41 +103,46 @@
         <div class="evidence-box">
             📄 <strong>실습 보고서:</strong> 
             <a href="https://github.com/birdmin/my-portfolio/blob/main/WebHackLab_%EB%B3%B4%EC%95%88%EC%B7%A8%EC%95%BD%EC%A0%90_%EC%A0%90%EA%B2%80%EB%B3%B4%EA%B3%A0%EC%84%9C.docx" target="_blank" rel="noopener noreferrer" class="tab-target">
-                WebHackLab 웹 애플리케이션 보안 취약점 점검 보고서 (SQLi, XSS, IDOR, Command Injection 진단 기록)
+                WebHackLab 웹 애플리케이션 보안 취약점 점검 보고서
             </a>
         </div>
 
-        <!-- [과제 8 추가] 비공개 영역 섹션 -->
         <section id="private-section" class="private-section">
             <h2>🔒 비공개 영역 (패스키 전용)</h2>
             
-            <!-- 미인증 상태 표시 -->
             <div id="private-locked">
                 <p style="margin-bottom: 15px; font-weight: bold; color: #495057;">
                     이 영역은 패스키(Passkey) 인증을 완료한 사용자만 조회할 수 있습니다.
                 </p>
+
+                <!-- [카드 2 추가] 패스키 등록 버튼 -->
+                <button id="passkey-register-btn" type="button" class="toggle-btn reg-btn tab-target" onclick="registerPasskey()">
+                    ➕ 새 패스키 등록하기
+                </button>
+
                 <button id="passkey-login-btn" type="button" class="toggle-btn passkey-btn tab-target" onclick="fetchPrivateData()">
                     🔑 패스키로 로그인하여 보기
                 </button>
                 <p id="private-status-msg" style="margin-top: 10px; color: #d9480f; font-weight: bold;"></p>
             </div>
 
-            <!-- 인증 성공 시 비공개 항목 표시 (초기에는 숨김) -->
             <div id="private-content" style="display: none; margin-top: 15px;">
                 <h3 style="color: #2b8a3e; margin-bottom: 10px;">✅ 인증 성공 - 비공개 데이터 목록</h3>
-                <ul id="private-list" style="margin-left: 20px; line-height: 1.8; color: #343a40;">
-                    <!-- 백엔드 서버에서 받아온 비공개 데이터가 여기에 동적으로 삽입됩니다. -->
-                </ul>
+                <ul id="private-list" style="margin-left: 20px; line-height: 1.8; color: #343a40;"></ul>
             </div>
         </section>
     </main>
 </div>
 
 <script>
+    // Supabase 연동 정보 반영 완료
+    const SUPABASE_URL = 'https://qbmyimkyzxnfqgkfyoqc.supabase.co';
+    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFibXlpbWt5enhuZnFna2Z5b3FjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3NDA4NTIsImV4cCI6MjEwNjMxNjg1Mn0.eDlx9irK4wKuYv3HJ7SSwurZHF6ikw2LfAoZEnFv3og';
+    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
     function toggleDetail(id, btn) {
         const content = document.getElementById(id);
         const isExpanded = btn.getAttribute('aria-expanded') === 'true';
-        
         if (isExpanded) {
             content.classList.remove('active');
             btn.setAttribute('aria-expanded', 'false');
@@ -308,70 +158,99 @@
         }
     }
 
-    // [과제 8 추가] 비공개 데이터 서버 요청 함수 (401/403 거절 테스트용)
-    async function fetchPrivateData() {
+    // 헬퍼 함수: ArrayBuffer <-> Base64URL
+    function bufferToBase64URL(buffer) {
+        const bytes = new Uint8Array(buffer);
+        let string = '';
+        for (let i = 0; i < bytes.byteLength; i++) {
+            string += String.fromCharCode(bytes[i]);
+        }
+        return btoa(string).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+    }
+
+    // [카드 2 기능] 패스키 등록 함수
+    async function registerPasskey() {
         const statusMsg = document.getElementById('private-status-msg');
-        statusMsg.innerText = "비공개 데이터를 요청하는 중...";
+        statusMsg.style.color = '#0056b3';
+        statusMsg.innerText = "서버에서 등록용 Challenge(질문)를 생성 중입니다...";
 
         try {
-            // 추후 연동할 백엔드 API 엔드포인트
-            const response = await fetch('/api/private-data', {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
+            // 1. 서버(Supabase)에 일회용 Challenge 생성 요청 [T08-C19, T08-C20]
+            const rawChallenge = window.crypto.getRandomValues(new Uint8Array(32));
+            const challengeStr = bufferToBase64URL(rawChallenge);
+
+            const { data: chalData, error: chalError } = await supabase
+                .from('challenges')
+                .insert([{ challenge_value: challengeStr }])
+                .select();
+
+            if (chalError) throw chalError;
+            console.log("생성된 Challenge:", challengeStr);
+
+            // 2. 브라우저 WebAuthn API 호출 (브라우저 패스키 팝업) [T08-C26]
+            statusMsg.innerText = "기기 패스키 인증을 진행해 주세요...";
+
+            const publicKeyCredentialCreationOptions = {
+                challenge: rawChallenge,
+                rp: { name: "보안 포트폴리오", id: window.location.hostname },
+                user: {
+                    id: Uint8Array.from("user_kmkm", c => c.charCodeAt(0)),
+                    name: "kyeongmin@example.com",
+                    displayName: "김경민"
+                },
+                pubKeyCredParams: [{ alg: -7, type: "public-key" }],
+                authenticatorSelection: { userVerification: "preferred" },
+                timeout: 60000
+            };
+
+            const credential = await navigator.credentials.create({
+                publicKey: publicKeyCredentialCreationOptions
             });
 
-            if (response.status === 401 || response.status === 403) {
-                statusMsg.innerText = `[접근 거부 - HTTP ${response.status}] 로그인/패스키 인증이 필요합니다.`;
+            // 3. 패스키 별칭(이름) 입력 [T08-C24]
+            const passkeyName = prompt("이 패스키의 이름을 입력하세요 (예: 경민의 Windows Hello):", "내 개인 기기");
+            if (!passkeyName) {
+                statusMsg.style.color = '#d9480f';
+                statusMsg.innerText = "등록이 취소되었습니다. (이름 미입력)";
                 return;
             }
 
-            if (!response.ok) {
-                throw new Error(`HTTP 에러 발생: ${response.status}`);
+            // 4. 공개키 및 패스키 정보 저장 [T08-C21, T08-C22, T08-C23]
+            const credId = bufferToBase64URL(credential.rawId);
+            const pubKeyPEM = bufferToBase64URL(credential.response.attestationObject); // 공개키 추출값
+
+            const { error: passkeyError } = await supabase
+                .from('passkeys')
+                .insert([{
+                    user_id: "user_kmkm",
+                    credential_id: credId,
+                    public_key: pubKeyPEM,
+                    passkey_name: passkeyName
+                }]);
+
+            if (passkeyError) throw passkeyError;
+
+            statusMsg.style.color = '#2b8a3e';
+            statusMsg.innerText = `✅ 패스키 [${passkeyName}] 등록이 완료되었습니다!`;
+
+        } catch (err) {
+            console.error(err);
+            statusMsg.style.color = '#d9480f';
+
+            // [T08-C25] 등록 중 취소 시 예외 처리
+            if (err.name === 'NotAllowedError') {
+                statusMsg.innerText = "❌ 패스키 등록이 취소되었습니다. (서버에 아무것도 저장되지 않음)";
+            } else {
+                statusMsg.innerText = "❌ 패스키 등록 실패: " + err.message;
             }
-
-            const data = await response.json();
-            
-            // 데이터 출력 처리
-            const listEl = document.getElementById('private-list');
-            listEl.innerHTML = '';
-            data.items.forEach(item => {
-                const li = document.createElement('li');
-                li.textContent = item;
-                listEl.appendChild(li);
-            });
-
-            document.getElementById('private-locked').style.display = 'none';
-            document.getElementById('private-content').style.display = 'block';
-
-        } catch (error) {
-            statusMsg.innerText = "요청 실패: 패스키 인증 서버가 설정되지 않았거나 접근할 수 없습니다. (HTTP 401/403 처리 준비완료)";
         }
     }
 
-    window.addEventListener('keydown', function(e) {
-        if (e.key === 'Tab') {
-            const targets = Array.from(document.querySelectorAll('.tab-target'));
-            if (targets.length === 0) return;
-
-            const first = targets[0];
-            const last = targets[targets.length - 1];
-            const current = document.activeElement;
-
-            if (e.shiftKey) {
-                if (current === first || !targets.includes(current)) {
-                    e.preventDefault();
-                    last.focus();
-                }
-            } else {
-                if (current === last || !targets.includes(current)) {
-                    e.preventDefault();
-                    first.focus();
-                }
-            }
-        }
-    }, true);
+    async function fetchPrivateData() {
+        const statusMsg = document.getElementById('private-status-msg');
+        statusMsg.style.color = '#d9480f';
+        statusMsg.innerText = "[접근 거부 - HTTP 401/403] 패스키 로그인 인증이 필요합니다.";
+    }
 </script>
 
 </body>
