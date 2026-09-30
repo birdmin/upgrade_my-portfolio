@@ -134,7 +134,7 @@
 </div>
 
 <script>
-    // Supabase 설정 (단 한 번만 선언)
+    // Supabase 설정 (단 1회만 선언하여 중복 오류 방지)
     const SUPABASE_URL = 'https://qbmyimkyzxnfqgkfyoqc.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFibXlpbWt5enhuZnFna2Z5b3FjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3NDA4NTIsImV4cCI6MjEwNjMxNjg1Mn0.eDlx9irK4wKuYv3HJ7SSwurZHF6ikw2LfAoZEnFv3og';
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -157,7 +157,6 @@
         }
     }
 
-    // 헬퍼 함수: ArrayBuffer <-> Base64URL
     function bufferToBase64URL(buffer) {
         const bytes = new Uint8Array(buffer);
         let string = '';
@@ -167,14 +166,12 @@
         return btoa(string).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
     }
 
-    // [카드 2 기능] 패스키 등록 함수
     async function registerPasskey() {
         const statusMsg = document.getElementById('private-status-msg');
         statusMsg.style.color = '#0056b3';
         statusMsg.innerText = "서버에서 등록용 Challenge(질문)를 생성 중입니다...";
 
         try {
-            // 1. 서버(Supabase)에 일회용 Challenge 생성 요청
             const rawChallenge = window.crypto.getRandomValues(new Uint8Array(32));
             const challengeStr = bufferToBase64URL(rawChallenge);
 
@@ -186,7 +183,6 @@
             if (chalError) throw chalError;
             console.log("생성된 Challenge:", challengeStr);
 
-            // 2. 브라우저 WebAuthn API 호출 (브라우저 패스키 팝업)
             statusMsg.innerText = "기기 패스키 인증을 진행해 주세요...";
 
             const publicKeyCredentialCreationOptions = {
@@ -206,7 +202,6 @@
                 publicKey: publicKeyCredentialCreationOptions
             });
 
-            // 3. 패스키 별칭(이름) 입력
             const passkeyName = prompt("이 패스키의 이름을 입력하세요 (예: 경민의 Windows Hello):", "내 개인 기기");
             if (!passkeyName) {
                 statusMsg.style.color = '#d9480f';
@@ -214,7 +209,6 @@
                 return;
             }
 
-            // 4. 공개키 및 패스키 정보 저장
             const credId = bufferToBase64URL(credential.rawId);
             const pubKeyPEM = bufferToBase64URL(credential.response.attestationObject);
 
