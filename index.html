@@ -145,39 +145,35 @@
     var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFibXlpbWt5enhuZnFna2Z5b3FjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3NDA4NTIsImV4cCI6MjEwNjMxNjg1Mn0.eDlx9irK4wKuYv3HJ7SSwurZHF6ikw2LfAoZEnFv3og';
     var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Tab 키 이동을 특정 요소 내부로 제한하는 Tab Trapping 구현
+    // Tab 키 입력 시 브라우저 외부(URL창/즐겨찾기)로 이동하는 기본 동작을 차단하고 페이지 내부 타겟들 간에만 무한 순환
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Tab' || e.keyCode === 9) {
-            // tab-target 클래스를 가진 활성화된 요소들만 수집 (display: none 요소 제외)
+            // 화면상에 표시된 .tab-target 요소를 가져옴
             var targets = Array.from(document.querySelectorAll('.tab-target')).filter(function(el) {
                 return el.offsetParent !== null;
             });
 
             if (targets.length === 0) return;
 
-            var firstTarget = targets[0];
-            var lastTarget = targets[targets.length - 1];
+            // 브라우저의 기본 Tab 이동 동작을 차단
+            e.preventDefault();
 
-            // 현재 포커스 위치가 지정된 타겟 외부에 있거나 없는 경우
-            if (!targets.includes(document.activeElement)) {
-                e.preventDefault();
-                firstTarget.focus();
+            var currentIndex = targets.indexOf(document.activeElement);
+
+            // 포커스가 타겟 내에 없는 경우 첫번째 항목으로 포커스
+            if (currentIndex === -1) {
+                targets[0].focus();
                 return;
             }
 
-            // Shift + Tab 눌렀을 때 (역방향)
             if (e.shiftKey) {
-                if (document.activeElement === firstTarget) {
-                    e.preventDefault();
-                    lastTarget.focus();
-                }
-            } 
-            // Tab 눌렀을 때 (정방향)
-            else {
-                if (document.activeElement === lastTarget) {
-                    e.preventDefault();
-                    firstTarget.focus();
-                }
+                // Shift + Tab: 이전 항목으로 (첫번째면 마지막으로)
+                var prevIndex = (currentIndex - 1 + targets.length) % targets.length;
+                targets[prevIndex].focus();
+            } else {
+                // Tab: 다음 항목으로 (마지막이면 첫번째로)
+                var nextIndex = (currentIndex + 1) % targets.length;
+                targets[nextIndex].focus();
             }
         }
     });
