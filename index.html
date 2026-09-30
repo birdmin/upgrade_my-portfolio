@@ -112,6 +112,7 @@
             padding: 15px;
             border-radius: 4px;
             font-size: 0.95rem;
+            margin-bottom: 25px;
         }
 
         .evidence-box a {
@@ -119,6 +120,25 @@
             font-weight: bold;
             text-decoration: underline;
             transition: all 2s ease-in-out;
+        }
+
+        /* 비공개 영역 (패스키 전용) 스타일 */
+        .private-section {
+            margin-top: 30px;
+            border: 2px dashed #d9480f;
+            padding: 20px;
+            border-radius: 8px;
+            background-color: #fff4e6;
+        }
+        .private-section h2 {
+            color: #d9480f;
+        }
+        .passkey-btn {
+            background-color: #d9480f;
+            border-color: #d9480f;
+        }
+        .passkey-btn:hover {
+            background-color: #b83200;
         }
 
         /* 2초 동안 테두리와 그림자가 서서히 나타나는 키프레임 정의 */
@@ -241,6 +261,30 @@
                 WebHackLab 웹 애플리케이션 보안 취약점 점검 보고서 (SQLi, XSS, IDOR, Command Injection 진단 기록)
             </a>
         </div>
+
+        <!-- [과제 8 추가] 비공개 영역 섹션 -->
+        <section id="private-section" class="private-section">
+            <h2>🔒 비공개 영역 (패스키 전용)</h2>
+            
+            <!-- 미인증 상태 표시 -->
+            <div id="private-locked">
+                <p style="margin-bottom: 15px; font-weight: bold; color: #495057;">
+                    이 영역은 패스키(Passkey) 인증을 완료한 사용자만 조회할 수 있습니다.
+                </p>
+                <button id="passkey-login-btn" type="button" class="toggle-btn passkey-btn tab-target" onclick="fetchPrivateData()">
+                    🔑 패스키로 로그인하여 보기
+                </button>
+                <p id="private-status-msg" style="margin-top: 10px; color: #d9480f; font-weight: bold;"></p>
+            </div>
+
+            <!-- 인증 성공 시 비공개 항목 표시 (초기에는 숨김) -->
+            <div id="private-content" style="display: none; margin-top: 15px;">
+                <h3 style="color: #2b8a3e; margin-bottom: 10px;">✅ 인증 성공 - 비공개 데이터 목록</h3>
+                <ul id="private-list" style="margin-left: 20px; line-height: 1.8; color: #343a40;">
+                    <!-- 백엔드 서버에서 받아온 비공개 데이터가 여기에 동적으로 삽입됩니다. -->
+                </ul>
+            </div>
+        </section>
     </main>
 </div>
 
@@ -261,6 +305,48 @@
             if(id === 'detail-1') btn.innerText = '상세 진단 항목 접기 ▲';
             if(id === 'detail-2') btn.innerText = '학습 세부 내용 접기 ▲';
             if(id === 'detail-3') btn.innerText = '해결 사례 접기 ▲';
+        }
+    }
+
+    // [과제 8 추가] 비공개 데이터 서버 요청 함수 (401/403 거절 테스트용)
+    async function fetchPrivateData() {
+        const statusMsg = document.getElementById('private-status-msg');
+        statusMsg.innerText = "비공개 데이터를 요청하는 중...";
+
+        try {
+            // 추후 연동할 백엔드 API 엔드포인트
+            const response = await fetch('/api/private-data', {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            });
+
+            if (response.status === 401 || response.status === 403) {
+                statusMsg.innerText = `[접근 거부 - HTTP ${response.status}] 로그인/패스키 인증이 필요합니다.`;
+                return;
+            }
+
+            if (!response.ok) {
+                throw new Error(`HTTP 에러 발생: ${response.status}`);
+            }
+
+            const data = await response.json();
+            
+            // 데이터 출력 처리
+            const listEl = document.getElementById('private-list');
+            listEl.innerHTML = '';
+            data.items.forEach(item => {
+                const li = document.createElement('li');
+                li.textContent = item;
+                listEl.appendChild(li);
+            });
+
+            document.getElementById('private-locked').style.display = 'none';
+            document.getElementById('private-content').style.display = 'block';
+
+        } catch (error) {
+            statusMsg.innerText = "요청 실패: 패스키 인증 서버가 설정되지 않았거나 접근할 수 없습니다. (HTTP 401/403 처리 준비완료)";
         }
     }
 
