@@ -115,7 +115,6 @@
                     이 영역은 패스키(Passkey) 인증을 완료한 사용자만 조회할 수 있습니다.
                 </p>
 
-                <!-- [카드 2 추가] 패스키 등록 버튼 -->
                 <button id="passkey-register-btn" type="button" class="toggle-btn reg-btn tab-target" onclick="registerPasskey()">
                     ➕ 새 패스키 등록하기
                 </button>
@@ -135,7 +134,7 @@
 </div>
 
 <script>
-    // Supabase 연동 정보 반영 완료
+    // Supabase 설정 (단 한 번만 선언)
     const SUPABASE_URL = 'https://qbmyimkyzxnfqgkfyoqc.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFibXlpbWt5enhuZnFna2Z5b3FjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3NDA4NTIsImV4cCI6MjEwNjMxNjg1Mn0.eDlx9irK4wKuYv3HJ7SSwurZHF6ikw2LfAoZEnFv3og';
     const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -175,7 +174,7 @@
         statusMsg.innerText = "서버에서 등록용 Challenge(질문)를 생성 중입니다...";
 
         try {
-            // 1. 서버(Supabase)에 일회용 Challenge 생성 요청 [T08-C19, T08-C20]
+            // 1. 서버(Supabase)에 일회용 Challenge 생성 요청
             const rawChallenge = window.crypto.getRandomValues(new Uint8Array(32));
             const challengeStr = bufferToBase64URL(rawChallenge);
 
@@ -187,7 +186,7 @@
             if (chalError) throw chalError;
             console.log("생성된 Challenge:", challengeStr);
 
-            // 2. 브라우저 WebAuthn API 호출 (브라우저 패스키 팝업) [T08-C26]
+            // 2. 브라우저 WebAuthn API 호출 (브라우저 패스키 팝업)
             statusMsg.innerText = "기기 패스키 인증을 진행해 주세요...";
 
             const publicKeyCredentialCreationOptions = {
@@ -207,7 +206,7 @@
                 publicKey: publicKeyCredentialCreationOptions
             });
 
-            // 3. 패스키 별칭(이름) 입력 [T08-C24]
+            // 3. 패스키 별칭(이름) 입력
             const passkeyName = prompt("이 패스키의 이름을 입력하세요 (예: 경민의 Windows Hello):", "내 개인 기기");
             if (!passkeyName) {
                 statusMsg.style.color = '#d9480f';
@@ -215,9 +214,9 @@
                 return;
             }
 
-            // 4. 공개키 및 패스키 정보 저장 [T08-C21, T08-C22, T08-C23]
+            // 4. 공개키 및 패스키 정보 저장
             const credId = bufferToBase64URL(credential.rawId);
-            const pubKeyPEM = bufferToBase64URL(credential.response.attestationObject); // 공개키 추출값
+            const pubKeyPEM = bufferToBase64URL(credential.response.attestationObject);
 
             const { error: passkeyError } = await supabase
                 .from('passkeys')
@@ -237,7 +236,6 @@
             console.error(err);
             statusMsg.style.color = '#d9480f';
 
-            // [T08-C25] 등록 중 취소 시 예외 처리
             if (err.name === 'NotAllowedError') {
                 statusMsg.innerText = "❌ 패스키 등록이 취소되었습니다. (서버에 아무것도 저장되지 않음)";
             } else {
