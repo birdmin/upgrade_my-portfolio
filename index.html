@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>김경민 | 보안 전문가 포트폴리오</title>
+    <!-- 파비콘 404 에러 방지용 dummy favicon -->
+    <link rel="shortcut icon" href="#">
     <!-- Supabase JS SDK 불러오기 -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
@@ -134,14 +136,14 @@
 </div>
 
 <script>
-    // Supabase 설정 (단 1회만 선언하여 중복 오류 방지)
-    const SUPABASE_URL = 'https://qbmyimkyzxnfqgkfyoqc.supabase.co';
-    const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFibXlpbWt5enhuZnFna2Z5b3FjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3NDA4NTIsImV4cCI6MjEwNjMxNjg1Mn0.eDlx9irK4wKuYv3HJ7SSwurZHF6ikw2LfAoZEnFv3og';
-    const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+    // var를 사용하여 변수 중복 선언 시에도 문법 에러가 발생하지 않도록 처리
+    var SUPABASE_URL = 'https://qbmyimkyzxnfqgkfyoqc.supabase.co';
+    var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFibXlpbWt5enhuZnFna2Z5b3FjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3NDA4NTIsImV4cCI6MjEwNjMxNjg1Mn0.eDlx9irK4wKuYv3HJ7SSwurZHF6ikw2LfAoZEnFv3og';
+    var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     function toggleDetail(id, btn) {
-        const content = document.getElementById(id);
-        const isExpanded = btn.getAttribute('aria-expanded') === 'true';
+        var content = document.getElementById(id);
+        var isExpanded = btn.getAttribute('aria-expanded') === 'true';
         if (isExpanded) {
             content.classList.remove('active');
             btn.setAttribute('aria-expanded', 'false');
@@ -158,24 +160,24 @@
     }
 
     function bufferToBase64URL(buffer) {
-        const bytes = new Uint8Array(buffer);
-        let string = '';
-        for (let i = 0; i < bytes.byteLength; i++) {
+        var bytes = new Uint8Array(buffer);
+        var string = '';
+        for (var i = 0; i < bytes.byteLength; i++) {
             string += String.fromCharCode(bytes[i]);
         }
         return btoa(string).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
     }
 
     async function registerPasskey() {
-        const statusMsg = document.getElementById('private-status-msg');
+        var statusMsg = document.getElementById('private-status-msg');
         statusMsg.style.color = '#0056b3';
         statusMsg.innerText = "서버에서 등록용 Challenge(질문)를 생성 중입니다...";
 
         try {
-            const rawChallenge = window.crypto.getRandomValues(new Uint8Array(32));
-            const challengeStr = bufferToBase64URL(rawChallenge);
+            var rawChallenge = window.crypto.getRandomValues(new Uint8Array(32));
+            var challengeStr = bufferToBase64URL(rawChallenge);
 
-            const { data: chalData, error: chalError } = await supabase
+            var { data: chalData, error: chalError } = await supabase
                 .from('challenges')
                 .insert([{ challenge_value: challengeStr }])
                 .select();
@@ -185,11 +187,11 @@
 
             statusMsg.innerText = "기기 패스키 인증을 진행해 주세요...";
 
-            const publicKeyCredentialCreationOptions = {
+            var publicKeyCredentialCreationOptions = {
                 challenge: rawChallenge,
                 rp: { name: "보안 포트폴리오", id: window.location.hostname },
                 user: {
-                    id: Uint8Array.from("user_kmkm", c => c.charCodeAt(0)),
+                    id: Uint8Array.from("user_kmkm", function(c) { return c.charCodeAt(0); }),
                     name: "kyeongmin@example.com",
                     displayName: "김경민"
                 },
@@ -198,21 +200,21 @@
                 timeout: 60000
             };
 
-            const credential = await navigator.credentials.create({
+            var credential = await navigator.credentials.create({
                 publicKey: publicKeyCredentialCreationOptions
             });
 
-            const passkeyName = prompt("이 패스키의 이름을 입력하세요 (예: 경민의 Windows Hello):", "내 개인 기기");
+            var passkeyName = prompt("이 패스키의 이름을 입력하세요 (예: 경민의 Windows Hello):", "내 개인 기기");
             if (!passkeyName) {
                 statusMsg.style.color = '#d9480f';
                 statusMsg.innerText = "등록이 취소되었습니다. (이름 미입력)";
                 return;
             }
 
-            const credId = bufferToBase64URL(credential.rawId);
-            const pubKeyPEM = bufferToBase64URL(credential.response.attestationObject);
+            var credId = bufferToBase64URL(credential.rawId);
+            var pubKeyPEM = bufferToBase64URL(credential.response.attestationObject);
 
-            const { error: passkeyError } = await supabase
+            var { error: passkeyError } = await supabase
                 .from('passkeys')
                 .insert([{
                     user_id: "user_kmkm",
@@ -224,7 +226,7 @@
             if (passkeyError) throw passkeyError;
 
             statusMsg.style.color = '#2b8a3e';
-            statusMsg.innerText = `✅ 패스키 [${passkeyName}] 등록이 완료되었습니다!`;
+            statusMsg.innerText = "✅ 패스키 [" + passkeyName + "] 등록이 완료되었습니다!";
 
         } catch (err) {
             console.error(err);
@@ -239,7 +241,7 @@
     }
 
     async function fetchPrivateData() {
-        const statusMsg = document.getElementById('private-status-msg');
+        var statusMsg = document.getElementById('private-status-msg');
         statusMsg.style.color = '#d9480f';
         statusMsg.innerText = "[접근 거부 - HTTP 401/403] 패스키 로그인 인증이 필요합니다.";
     }
