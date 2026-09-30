@@ -32,6 +32,19 @@
         .passkey-btn:hover { background-color: #b83200; }
         .reg-btn { background-color: #2b8a3e; border-color: #2b8a3e; margin-bottom: 10px; }
         .reg-btn:hover { background-color: #216a30; }
+
+        /* 패스키 목록 UI 스타일링 */
+        .passkey-list-box { margin-top: 15px; margin-bottom: 15px; background: #ffffff; border: 1px solid #ced4da; border-radius: 6px; padding: 12px; }
+        .passkey-list-title { font-size: 0.95rem; font-weight: bold; color: #495057; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+        .passkey-item-list { list-style: none; padding: 0; margin: 0; }
+        .passkey-item { display: flex; justify-content: space-between; align-items: center; padding: 8px 10px; border-bottom: 1px solid #f1f3f5; font-size: 0.88rem; }
+        .passkey-item:last-child { border-bottom: none; }
+        .passkey-info { display: flex; flex-direction: column; }
+        .passkey-name { font-weight: bold; color: #212529; }
+        .passkey-date { font-size: 0.75rem; color: #868e96; }
+        .del-btn { background-color: #c92a2a; border: 1px solid #c92a2a; color: white; border-radius: 4px; padding: 4px 8px; font-size: 0.75rem; cursor: pointer; transition: background-color 0.2s; }
+        .del-btn:hover { background-color: #a51d1d; }
+
         @keyframes slowFocus { 0% { outline: 1px solid rgba(217, 72, 15, 0.1); outline-offset: 0px; box-shadow: 0 0 0 0px rgba(217, 72, 15, 0); background-color: #0056b3; } 100% { outline: 5px solid #d9480f; outline-offset: 5px; box-shadow: 0 0 0 8px rgba(217, 72, 15, 0.4); background-color: #d9480f; } }
         a:focus, a:focus-visible, button:focus, button:focus-visible { animation: slowFocus 2s forwards ease-in-out !important; }
         @media (prefers-reduced-motion: reduce) { *, ::before, ::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; } a:focus, a:focus-visible, button:focus, button:focus-visible { animation: none !important; outline: 4px solid #d9480f !important; outline-offset: 4px !important; background-color: #d9480f !important; } }
@@ -118,6 +131,17 @@
                     이 영역은 패스키(Passkey) 인증을 완료한 사용자만 조회할 수 있습니다.
                 </p>
 
+                <!-- 등록된 패스키 목록 영역 -->
+                <div class="passkey-list-box">
+                    <div class="passkey-list-title">
+                        <span>🔑 등록된 패스키 목록</span>
+                        <button type="button" class="del-btn tab-target" onclick="loadPasskeyList()" style="background-color: #495057; border-color: #495057;">🔄 목록 새로고침</button>
+                    </div>
+                    <ul id="passkey-list" class="passkey-item-list">
+                        <li style="padding: 8px 10px; color: #868e96; font-size: 0.85rem;">목록을 불러오는 중...</li>
+                    </ul>
+                </div>
+
                 <button id="passkey-register-btn" type="button" class="toggle-btn reg-btn tab-target" onclick="registerPasskey()">
                     ➕ 새 패스키 등록하기
                 </button>
@@ -145,33 +169,32 @@
     var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFibXlpbWt5enhuZnFna2Z5b3FjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3NDA4NTIsImV4cCI6MjEwNjMxNjg1Mn0.eDlx9irK4wKuYv3HJ7SSwurZHF6ikw2LfAoZEnFv3og';
     var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // Tab 키 입력 시 브라우저 외부(URL창/즐겨찾기)로 이동하는 기본 동작을 차단하고 페이지 내부 타겟들 간에만 무한 순환
+    // 페이지 로드 시 등록된 패스키 목록을 즉시 조회
+    document.addEventListener('DOMContentLoaded', function() {
+        loadPasskeyList();
+    });
+
+    // Tab 키 접근성 순환 처리
     document.addEventListener('keydown', function(e) {
         if (e.key === 'Tab' || e.keyCode === 9) {
-            // 화면상에 표시된 .tab-target 요소를 가져옴
             var targets = Array.from(document.querySelectorAll('.tab-target')).filter(function(el) {
                 return el.offsetParent !== null;
             });
 
             if (targets.length === 0) return;
 
-            // 브라우저의 기본 Tab 이동 동작을 차단
             e.preventDefault();
-
             var currentIndex = targets.indexOf(document.activeElement);
 
-            // 포커스가 타겟 내에 없는 경우 첫번째 항목으로 포커스
             if (currentIndex === -1) {
                 targets[0].focus();
                 return;
             }
 
             if (e.shiftKey) {
-                // Shift + Tab: 이전 항목으로 (첫번째면 마지막으로)
                 var prevIndex = (currentIndex - 1 + targets.length) % targets.length;
                 targets[prevIndex].focus();
             } else {
-                // Tab: 다음 항목으로 (마지막이면 첫번째로)
                 var nextIndex = (currentIndex + 1) % targets.length;
                 targets[nextIndex].focus();
             }
@@ -203,6 +226,75 @@
             string += String.fromCharCode(bytes[i]);
         }
         return btoa(string).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+    }
+
+    // 패스키 목록 불러오기 함수
+    async function loadPasskeyList() {
+        var listEl = document.getElementById('passkey-list');
+        listEl.innerHTML = '<li style="padding: 8px 10px; color: #868e96; font-size: 0.85rem;">목록 조회 중...</li>';
+
+        try {
+            var { data: passkeys, error } = await supabase
+                .from('passkeys')
+                .select('id, credential_id, passkey_name, created_at')
+                .eq('user_id', 'user_kmkm')
+                .order('created_at', { ascending: false });
+
+            if (error) throw error;
+
+            if (!passkeys || passkeys.length === 0) {
+                listEl.innerHTML = '<li style="padding: 8px 10px; color: #868e96; font-size: 0.85rem;">등록된 패스키가 없습니다.</li>';
+                return;
+            }
+
+            listEl.innerHTML = '';
+            passkeys.forEach(function(pk) {
+                var li = document.createElement('li');
+                li.className = 'passkey-item';
+
+                var dateStr = pk.created_at ? new Date(pk.created_at).toLocaleDateString('ko-KR') : '날짜 없음';
+                var nameStr = pk.passkey_name || '이름 없는 패스키';
+
+                li.innerHTML = 
+                    '<div class="passkey-info">' +
+                        '<span class="passkey-name">' + nameStr + '</span>' +
+                        '<span class="passkey-date">등록일: ' + dateStr + '</span>' +
+                    '</div>' +
+                    '<button type="button" class="del-btn tab-target" onclick="deletePasskey(\'' + pk.id + '\', \'' + nameStr.replace(/'/g, "\\'") + '\')">삭제</button>';
+
+                listEl.appendChild(li);
+            });
+
+        } catch (err) {
+            console.error(err);
+            listEl.innerHTML = '<li style="padding: 8px 10px; color: #d9480f; font-size: 0.85rem;">목록 로드 실패: ' + err.message + '</li>';
+        }
+    }
+
+    // 패스키 삭제 함수
+    async function deletePasskey(id, name) {
+        if (!confirm("정말로 패스키 [" + name + "]을(를) 삭제하시겠습니까?")) {
+            return;
+        }
+
+        var statusMsg = document.getElementById('private-status-msg');
+        try {
+            var { error } = await supabase
+                .from('passkeys')
+                .delete()
+                .eq('id', id);
+
+            if (error) throw error;
+
+            statusMsg.style.color = '#2b8a3e';
+            statusMsg.innerText = "🗑️ 패스키 [" + name + "]이(가) 삭제되었습니다.";
+            loadPasskeyList();
+
+        } catch (err) {
+            console.error(err);
+            statusMsg.style.color = '#d9480f';
+            statusMsg.innerText = "❌ 패스키 삭제 실패: " + err.message;
+        }
     }
 
     // 1. 패스키 등록 함수
@@ -264,6 +356,9 @@
 
             statusMsg.style.color = '#2b8a3e';
             statusMsg.innerText = "✅ 패스키 [" + passkeyName + "] 등록 완료! 이제 아래 로그인 버튼을 눌러보세요.";
+            
+            // 등록 성공 후 목록 새로고침
+            loadPasskeyList();
 
         } catch (err) {
             console.error(err);
