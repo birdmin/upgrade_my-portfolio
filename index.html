@@ -3,212 +3,310 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>김경민 | 보안 포트폴리오</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>김경민 | 보안 전문가 포트폴리오</title>
+    <!-- 파비콘 404 에러 방지용 dummy favicon -->
+    <link rel="shortcut icon" href="#">
+    <!-- Supabase JS SDK 불러오기 -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <style>
-        @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
-        body {
-            font-family: 'Pretendard', sans-serif;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: 'Pretendard', -apple-system, BlinkMacSystemFont, system-ui, Roboto, sans-serif; line-height: 1.5; color: #212529; background-color: #f8f9fa; display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+        .container { width: 100%; max-width: 900px; background: #ffffff; padding: 30px 40px; border-radius: 12px; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08); overflow: hidden; }
+        header { border-bottom: 2px solid #0056b3; padding-bottom: 15px; margin-bottom: 20px; }
+        h1 { font-size: 1.8rem; color: #111111; margin-bottom: 5px; }
+        .intro { font-size: 1rem; color: #495057; }
+        h2 { font-size: 1.3rem; color: #0056b3; margin-bottom: 12px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 15px; margin-bottom: 20px; }
+        .card { background: #f1f3f5; padding: 15px; border-radius: 8px; font-size: 0.9rem; display: flex; flex-direction: column; justify-content: space-between; }
+        h3 { font-size: 1.05rem; margin-bottom: 6px; color: #111111; }
+        .card p { color: #343a40; margin-bottom: 4px; }
+        .toggle-btn { display: block; background-color: #0056b3; color: #ffffff; border: 2px solid #0056b3; padding: 8px 14px; font-size: 0.85rem; font-weight: bold; border-radius: 6px; cursor: pointer; margin-top: 10px; width: 100%; text-align: center; transition: all 2s ease-in-out; }
+        .toggle-btn:hover { background-color: #003d80; }
+        .details-content { margin-top: 10px; padding: 10px; background: #ffffff; border-left: 3px solid #0056b3; border-radius: 4px; display: none; }
+        .details-content.active { display: block; }
+        .evidence-box { background: #e7f5ff; border-left: 4px solid #1c7ed6; padding: 15px; border-radius: 4px; font-size: 0.95rem; margin-bottom: 25px; }
+        .evidence-box a { color: #0b7285; font-weight: bold; text-decoration: underline; transition: all 2s ease-in-out; }
+        .private-section { margin-top: 30px; border: 2px dashed #d9480f; padding: 20px; border-radius: 8px; background-color: #fff4e6; }
+        .private-section h2 { color: #d9480f; }
+        .passkey-btn { background-color: #d9480f; border-color: #d9480f; }
+        .passkey-btn:hover { background-color: #b83200; }
+        .reg-btn { background-color: #2b8a3e; border-color: #2b8a3e; margin-bottom: 10px; }
+        .reg-btn:hover { background-color: #216a30; }
+        @keyframes slowFocus { 0% { outline: 1px solid rgba(217, 72, 15, 0.1); outline-offset: 0px; box-shadow: 0 0 0 0px rgba(217, 72, 15, 0); background-color: #0056b3; } 100% { outline: 5px solid #d9480f; outline-offset: 5px; box-shadow: 0 0 0 8px rgba(217, 72, 15, 0.4); background-color: #d9480f; } }
+        a:focus, a:focus-visible, button:focus, button:focus-visible { animation: slowFocus 2s forwards ease-in-out !important; }
+        @media (prefers-reduced-motion: reduce) { *, ::before, ::after { animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; scroll-behavior: auto !important; } a:focus, a:focus-visible, button:focus, button:focus-visible { animation: none !important; outline: 4px solid #d9480f !important; outline-offset: 4px !important; background-color: #d9480f !important; } }
     </style>
 </head>
-<body class="bg-gray-900 text-gray-100 min-h-screen flex flex-col justify-between">
+<body>
 
-    <!-- Header / Navigation -->
-    <header class="w-full bg-gray-800 border-b border-gray-700 sticky top-0 z-50">
-        <div class="max-w-4xl mx-auto px-4 py-4 flex justify-between items-center">
-            <h1 class="text-xl font-bold text-indigo-400">
-                <a href="#"><i class="fa-solid fa-shield-halved mr-2"></i>김경민 Portfolio</a>
-            </h1>
-            <nav class="space-x-4 text-sm font-medium text-gray-300">
-                <a href="#about" class="hover:text-indigo-400 transition">프로필</a>
-                <a href="#private-info" class="hover:text-indigo-400 transition">비공개 항목</a>
-                <a href="#reports" class="hover:text-indigo-400 transition">점검보고서</a>
-            </nav>
-        </div>
+<div class="container">
+    <header>
+        <h1>김경민 (2005년생 / 컴퓨터공학과)</h1>
+        <p class="intro">보안전문가로서 성장하는 중인 대학생 김경민의 소개 페이지입니다.</p>
     </header>
 
-    <!-- Main Content Container -->
-    <main class="max-w-4xl mx-auto px-4 py-8 space-y-8 flex-grow w-full">
-
-        <!-- Card 1: Profile Section -->
-        <section id="about" class="bg-gray-800 rounded-2xl p-6 md:p-8 shadow-xl border border-gray-700">
-            <div class="flex flex-col md:flex-row items-center gap-6">
-                <!-- Profile Avatar -->
-                <div class="w-32 h-32 md:w-40 md:h-40 rounded-full bg-indigo-600/20 border-2 border-indigo-500 flex items-center justify-center flex-shrink-0">
-                    <i class="fa-solid fa-user-shield text-5xl md:text-6xl text-indigo-400"></i>
-                </div>
-                
-                <!-- Profile Details -->
-                <div class="space-y-3 text-center md:text-left flex-grow">
-                    <div class="inline-block px-3 py-1 bg-indigo-500/10 text-indigo-400 border border-indigo-500/20 rounded-full text-xs font-semibold uppercase tracking-wider mb-1">
-                        컴퓨터공학과 / 보안 전문가 지망
-                    </div>
-                    <h2 class="text-3xl font-extrabold text-white">김경민 <span class="text-sm font-normal text-gray-400">(2005년생)</span></h2>
-                    <p class="text-gray-300 leading-relaxed text-sm md:text-base">
-                        시스템 및 웹 보안 취약점 점검에 깊은 흥미를 느끼며 성장하고 있는 컴퓨터공학과 대학생입니다. 
-                        안전한 네트워크 환경 구현과 모의침투 테스트 능력을 갖춘 보안 전문가를 목표로 하고 있습니다.
-                    </p>
-                    
-                    <div class="pt-2 flex flex-wrap justify-center md:justify-start gap-4 text-sm text-gray-400">
-                        <span class="flex items-center gap-1.5"><i class="fa-solid fa-location-dot text-indigo-400"></i> 대한민국</span>
-                        <span class="flex items-center gap-1.5"><i class="fa-solid fa-envelope text-indigo-400"></i> ruddals7271@gmail.com</span>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Card 2: Private Info Section (Passkey Protected) -->
-        <section id="private-info" class="bg-gray-800 rounded-2xl p-6 md:p-8 shadow-xl border border-gray-700">
-            <div class="flex items-center justify-between mb-4 border-b border-gray-700 pb-3">
-                <h3 class="text-xl font-bold text-white flex items-center gap-2">
-                    <i class="fa-solid fa-lock text-amber-400"></i> 비공개 관리 항목
-                </h3>
-                <span id="auth-status-badge" class="text-xs text-red-400 bg-red-400/10 px-2.5 py-1 rounded-full border border-red-400/20 flex items-center gap-1">
-                    <i class="fa-solid fa-user-lock"></i> 인증 필요
-                </span>
-            </div>
-            
-            <p class="text-gray-400 text-sm mb-6">
-                포트폴리오 비공개 관리 정보입니다. 생체 인증 또는 보안 키(Passkey)를 통해 본인 확인 후 열람이 가능합니다.
-            </p>
-
-            <!-- 1. Authenticate Prompt (인증 전 잠금 상태 화면) -->
-            <div id="passkey-lock-screen" class="bg-gray-900/80 rounded-xl p-8 border border-dashed border-gray-700 text-center space-y-4">
-                <div class="w-16 h-16 bg-amber-500/10 border border-amber-500/30 rounded-full flex items-center justify-center mx-auto text-amber-400 text-2xl">
-                    <i class="fa-solid fa-key"></i>
+    <main>
+        <h2>주요 활동 및 역량</h2>
+        <div class="grid">
+            <article class="card">
+                <div>
+                    <h3>1. 웹 보안 취약점 진단</h3>
+                    <p><strong>상황:</strong> 웹 보안 원리를 익히기 위한 모의해킹 환경 필요</p>
+                    <p><strong>행동:</strong> WebHackLab 구축 및 OWASP Top 10 취약점 진단 수행</p>
+                    <p><strong>결과:</strong> 주요 취약점 원인 분석 및 대응 방안 정리</p>
                 </div>
                 <div>
-                    <h4 class="text-lg font-bold text-white">Passkey 인증이 필요합니다</h4>
-                    <p class="text-gray-400 text-xs mt-1">지문, Face ID 또는 보안 키를 이용하여 잠금을 해제하세요.</p>
-                </div>
-                <button id="btn-authenticate" onclick="authenticatePasskey()" class="px-6 py-2.5 bg-amber-500 hover:bg-amber-400 text-gray-900 font-bold rounded-lg transition inline-flex items-center gap-2 shadow-lg shadow-amber-500/20 text-sm">
-                    <i class="fa-solid fa-fingerprint"></i> Passkey로 인증하기
-                </button>
-                <p id="auth-error-msg" class="text-xs text-red-400 hidden mt-2"></p>
-            </div>
-
-            <!-- 2. Protected Data Content (인증 성공 시 노출되는 영역) -->
-            <div id="passkey-content-screen" class="hidden grid grid-cols-1 md:grid-cols-3 gap-4">
-                <!-- Item 1: 재학 중인 대학 -->
-                <div class="bg-gray-900/90 p-4 rounded-xl border border-amber-500/30">
-                    <div class="text-amber-400 text-xs font-medium mb-1">
-                        <i class="fa-solid fa-graduation-cap mr-1"></i> 학적 정보
+                    <button type="button" class="toggle-btn tab-target" aria-expanded="false" aria-controls="detail-1" onclick="toggleDetail('detail-1', this)">상세 진단 항목 보기 ▼</button>
+                    <div id="detail-1" class="details-content">
+                        <p>• SQL Injection (인증 우회, 데이터 추출)</p>
+                        <p>• Cross-Site Scripting (XSS)</p>
+                        <p>• IDOR (부적절한 인가/접근 제어)</p>
+                        <p>• Command Injection</p>
                     </div>
-                    <div class="text-gray-400 text-xs mb-2">재학 중인 대학</div>
-                    <div class="text-white font-semibold">경북대학교</div>
                 </div>
+            </article>
 
-                <!-- Item 2: 지원하려는 곳 목록 -->
-                <div class="bg-gray-900/90 p-4 rounded-xl border border-amber-500/30">
-                    <div class="text-amber-400 text-xs font-medium mb-1">
-                        <i class="fa-solid fa-building mr-1"></i> 목표 기관
-                    </div>
-                    <div class="text-gray-400 text-xs mb-2">지원 목표 공기업</div>
-                    <div class="text-white font-semibold">한국지능정보사회진흥원(NIA), 대구교통공사 등</div>
-                </div>
-
-                <!-- Item 3: 현재 취득한 자격증 목록 -->
-                <div class="bg-gray-900/90 p-4 rounded-xl border border-amber-500/30">
-                    <div class="text-amber-400 text-xs font-medium mb-1">
-                        <i class="fa-solid fa-certificate mr-1"></i> 보유 자격증
-                    </div>
-                    <div class="text-gray-400 text-xs mb-2">현재 취득 자격증</div>
-                    <div class="text-white font-semibold">한국사능력검정 1급, SQLD</div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Card 3: Report & Project Section -->
-        <section id="reports" class="bg-gray-800 rounded-2xl p-6 md:p-8 shadow-xl border border-gray-700">
-            <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
-                <i class="fa-solid fa-file-contract text-indigo-400"></i> 주요 분석 보고서 및 결과물
-            </h3>
-            
-            <div class="bg-gray-900/50 rounded-xl p-5 border border-gray-700 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+            <article class="card">
                 <div>
-                    <div class="flex items-center gap-2 mb-1">
-                        <span class="bg-red-500/10 text-red-400 border border-red-500/20 text-xs px-2 py-0.5 rounded font-medium">보안점검</span>
-                        <h4 class="text-lg font-bold text-white">WebHackLab 보안취약점 점검보고서</h4>
-                    </div>
-                    <p class="text-gray-400 text-sm">
-                        웹 애플리케이션 취약점 진단 및 모의침투 테스트 결과를 상세히 기록한 점검 보고서입니다.
-                    </p>
+                    <h3>2. 네트워크 및 CS 역량</h3>
+                    <p><strong>상황:</strong> 웹 애플리케이션 통신 과정에서의 패킷 및 보안 프로토콜 이해 필요</p>
+                    <p><strong>행동:</strong> Chrome DevTools Network 탭을 활용한 HTTP/REST API 패킷 트래픽 추적 및 WebAuthn 통신 디버깅</p>
+                    <p><strong>결과:</strong> 클라이언트-서버 간 데이터 흐름 파악 및 HTTP Status Code(401, 200) 분석을 통한 보안 권한 오류 해결 역량 확보</p>
                 </div>
-                
-                <!-- Report Link Button -->
-                <a href="https://github.com/birdmin/my-portfolio/blob/main/WebHackLab_%EB%B3%B4%EC%95%88%EC%B7%A8%EC%95%BD%EC%A0%90_%EC%A0%90%EA%B2%80%EB%B3%B4%EA%B3%A0%EC%84%9C.docx" 
-                   target="_blank" 
-                   rel="noopener noreferrer" 
-                   class="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-lg text-sm font-semibold transition flex-shrink-0 w-full md:w-auto shadow-lg shadow-indigo-600/20">
-                    <i class="fa-solid fa-file-word"></i> 보고서 보기
-                </a>
-            </div>
-        </section>
+                <div>
+                    <button type="button" class="toggle-btn tab-target" aria-expanded="false" aria-controls="detail-2" onclick="toggleDetail('detail-2', this)">학습 세부 내용 보기 ▼</button>
+                    <div id="detail-2" class="details-content">
+                        <p>• HTTP/HTTPS 프로토콜 및 REST API 동작 원리 분석</p>
+                        <p>• Chrome DevTools Network 탭을 활용한 트래픽 및 패킷 분석</p>
+                        <p>• WebAuthn / FIDO2 기반 패스키(Passkey) Challenge-Response 인증 프로토콜 구현</p>
+                        <p>• TCP/IP 4계층 및 기본 메모리 구조 이해</p>
+                    </div>
+                </div>
+            </article>
 
-    </main>
-
-    <!-- Footer -->
-    <footer class="w-full bg-gray-800 border-t border-gray-700 py-6 text-center text-xs text-gray-500">
-        <div class="max-w-4xl mx-auto px-4">
-            <p>© 2026 김경민. All rights reserved.</p>
-            <p class="mt-1">
-                <a href="https://github.com/birdmin/my-portfolio" target="_blank" class="hover:text-gray-400 underline">GitHub Repositories</a>
-            </p>
+            <article class="card">
+                <div>
+                    <h3>3. 디버깅 및 문제 해결</h3>
+                    <p><strong>상황:</strong> WebHackLab 구축 과정에서 발생한 복잡한 설정 및 코드 에러</p>
+                    <p><strong>행동:</strong> 바이브 코딩(AI 활용)으로 원인을 파악하고 서버 로그 추적 후 수정</p>
+                    <p><strong>결과:</strong> 시스템 오류의 신속한 해결 및 웹 구성 알고리즘 원리 습득</p>
+                </div>
+                <div>
+                    <button type="button" class="toggle-btn tab-target" aria-expanded="false" aria-controls="detail-3" onclick="toggleDetail('detail-3', this)">해결 사례 보기 ▼</button>
+                    <div id="detail-3" class="details-content">
+                        <p>• AI 프롬프트 기반 코드 에러 원인 즉시 분석</p>
+                        <p>• DB 커넥션 및 웹 서버 설정 디버깅</p>
+                        <p>• 실시간 오류 수정을 통한 문제 해결 역량 확보</p>
+                    </div>
+                </div>
+            </article>
         </div>
-    </footer>
 
-    <!-- WebAuthn / Passkey JavaScript Logic -->
-    <script>
-        async function authenticatePasskey() {
-            const errorMsg = document.getElementById('auth-error-msg');
-            errorMsg.classList.add('hidden');
+        <h2>공개 근거</h2>
+        <div class="evidence-box">
+            📄 <strong>실습 보고서:</strong> 
+            <a href="https://github.com/birdmin/my-portfolio/blob/main/WebHackLab_%EB%B3%B4%EC%95%88%EC%B7%A8%EC%95%BD%EC%A0%90_%EC%A0%90%EA%B2%80%EB%B3%B4%EA%B3%A0%EC%84%9C.docx" target="_blank" rel="noopener noreferrer" class="tab-target">
+                WebHackLab 웹 애플리케이션 보안 취약점 점검 보고서
+            </a>
+        </div>
 
-            // WebAuthn API 지원 여부 확인
-            if (!window.PublicKeyCredential) {
-                errorMsg.innerText = "이 브라우저는 WebAuthn(Passkey)을 지원하지 않습니다.";
-                errorMsg.classList.remove('hidden');
+        <section id="private-section" class="private-section">
+            <h2>🔒 비공개 영역 (패스키 전용)</h2>
+            
+            <div id="private-locked">
+                <p style="margin-bottom: 15px; font-weight: bold; color: #495057;">
+                    이 영역은 패스키(Passkey) 인증을 완료한 사용자만 조회할 수 있습니다.
+                </p>
+
+                <button id="passkey-register-btn" type="button" class="toggle-btn reg-btn tab-target" onclick="registerPasskey()">
+                    ➕ 새 패스키 등록하기
+                </button>
+
+                <button id="passkey-login-btn" type="button" class="toggle-btn passkey-btn tab-target" onclick="fetchPrivateData()">
+                    🔑 패스키로 로그인하여 보기
+                </button>
+                <p id="private-status-msg" style="margin-top: 10px; color: #d9480f; font-weight: bold;"></p>
+            </div>
+
+            <div id="private-content" style="display: none; margin-top: 15px;">
+                <h3 style="color: #2b8a3e; margin-bottom: 10px;">✅ 인증 성공 - 개인 비공개 프로필 정보</h3>
+                <ul id="private-list" style="margin-left: 20px; line-height: 1.8; color: #343a40;">
+                    <li><strong>재학 중인 대학:</strong> 경북대학교 (컴퓨터공학과)</li>
+                    <li><strong>지원 희망 목록:</strong> 한국지능정보사회진흥원(NIA), 대구교통공사 등의 주요 공기업</li>
+                    <li><strong>현재 취득 자격증:</strong> 한국사능력검정 1급, SQLD (SQL 개발자)</li>
+                </ul>
+            </div>
+        </section>
+    </main>
+</div>
+
+<script>
+    var SUPABASE_URL = 'https://qbmyimkyzxnfqgkfyoqc.supabase.co';
+    var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFibXlpbWt5enhuZnFna2Z5b3FjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3NDA4NTIsImV4cCI6MjEwNjMxNjg1Mn0.eDlx9irK4wKuYv3HJ7SSwurZHF6ikw2LfAoZEnFv3og';
+    var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+    function toggleDetail(id, btn) {
+        var content = document.getElementById(id);
+        var isExpanded = btn.getAttribute('aria-expanded') === 'true';
+        if (isExpanded) {
+            content.classList.remove('active');
+            btn.setAttribute('aria-expanded', 'false');
+            if(id === 'detail-1') btn.innerText = '상세 진단 항목 보기 ▼';
+            if(id === 'detail-2') btn.innerText = '학습 세부 내용 보기 ▼';
+            if(id === 'detail-3') btn.innerText = '해결 사례 보기 ▼';
+        } else {
+            content.classList.add('active');
+            btn.setAttribute('aria-expanded', 'true');
+            if(id === 'detail-1') btn.innerText = '상세 진단 항목 접기 ▲';
+            if(id === 'detail-2') btn.innerText = '학습 세부 내용 접기 ▲';
+            if(id === 'detail-3') btn.innerText = '해결 사례 접기 ▲';
+        }
+    }
+
+    function bufferToBase64URL(buffer) {
+        var bytes = new Uint8Array(buffer);
+        var string = '';
+        for (var i = 0; i < bytes.byteLength; i++) {
+            string += String.fromCharCode(bytes[i]);
+        }
+        return btoa(string).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
+    }
+
+    // 1. 패스키 등록 함수
+    async function registerPasskey() {
+        var statusMsg = document.getElementById('private-status-msg');
+        statusMsg.style.color = '#0056b3';
+        statusMsg.innerText = "서버에서 등록용 Challenge(질문)를 생성 중입니다...";
+
+        try {
+            var rawChallenge = window.crypto.getRandomValues(new Uint8Array(32));
+            var challengeStr = bufferToBase64URL(rawChallenge);
+
+            var { data: chalData, error: chalError } = await supabase
+                .from('challenges')
+                .insert([{ challenge_value: challengeStr }])
+                .select();
+
+            if (chalError) throw chalError;
+
+            statusMsg.innerText = "기기/구글 계정 패스키 인증을 진행해 주세요...";
+
+            var publicKeyCredentialCreationOptions = {
+                challenge: rawChallenge,
+                rp: { name: "보안 포트폴리오", id: window.location.hostname },
+                user: {
+                    id: Uint8Array.from("user_kmkm", function(c) { return c.charCodeAt(0); }),
+                    name: "kyeongmin@example.com",
+                    displayName: "김경민"
+                },
+                pubKeyCredParams: [{ alg: -7, type: "public-key" }, { alg: -257, type: "public-key" }],
+                authenticatorSelection: { userVerification: "preferred" },
+                timeout: 60000
+            };
+
+            var credential = await navigator.credentials.create({
+                publicKey: publicKeyCredentialCreationOptions
+            });
+
+            var passkeyName = prompt("이 패스키의 이름을 입력하세요:", "내 패스키");
+            if (!passkeyName) {
+                statusMsg.style.color = '#d9480f';
+                statusMsg.innerText = "등록이 취소되었습니다.";
                 return;
             }
 
-            try {
-                // 테스트/데모 환경을 위한 WebAuthn 인증 요청 시뮬레이션 및 API 호출
-                // 실제 서버 연동 시 challenge 및 credential ID는 백엔드에서 받아옵니다.
-                const publicKeyCredentialRequestOptions = {
-                    challenge: new Uint8Array([1, 2, 3, 4, 5, 6, 7, 8]),
-                    timeout: 60000,
-                    userVerification: "preferred"
-                };
+            var credId = bufferToBase64URL(credential.rawId);
+            var pubKeyPEM = bufferToBase64URL(credential.response.attestationObject);
 
-                // WebAuthn API 호출 (생체인증/PIN 창 호출)
-                // 로컬 테스트 환경 등 API 응답 조건에 따라 성공 처리 진행
-                await navigator.credentials.get({
-                    publicKey: publicKeyCredentialRequestOptions
-                }).catch(() => {
-                    // 데모용: WebAuthn 호출 후 완료되면 인증 성공 처리
-                    return true;
-                });
+            var { error: passkeyError } = await supabase
+                .from('passkeys')
+                .insert([{
+                    user_id: "user_kmkm",
+                    credential_id: credId,
+                    public_key: pubKeyPEM,
+                    passkey_name: passkeyName
+                }]);
 
-                // 인증 성공 시 UI 전환
-                unlockPrivateData();
+            if (passkeyError) throw passkeyError;
 
-            } catch (err) {
-                // 단순 데모용 인증 해제 처리 (실제 자격증명 인터랙션 시)
-                unlockPrivateData();
+            statusMsg.style.color = '#2b8a3e';
+            statusMsg.innerText = "✅ 패스키 [" + passkeyName + "] 등록 완료! 이제 아래 로그인 버튼을 눌러보세요.";
+
+        } catch (err) {
+            console.error(err);
+            statusMsg.style.color = '#d9480f';
+            if (err.name === 'NotAllowedError') {
+                statusMsg.innerText = "❌ 패스키 등록이 취소되었습니다.";
+            } else {
+                statusMsg.innerText = "❌ 패스키 등록 실패: " + err.message;
             }
         }
+    }
 
-        function unlockPrivateData() {
-            document.getElementById('passkey-lock-screen').classList.add('hidden');
-            document.getElementById('passkey-content-screen').classList.remove('hidden');
-            
-            const badge = document.getElementById('auth-status-badge');
-            badge.className = "text-xs text-green-400 bg-green-400/10 px-2.5 py-1 rounded-full border border-green-400/20 flex items-center gap-1";
-            badge.innerHTML = '<i class="fa-solid fa-lock-open"></i> 인증됨';
+    // 2. 패스키 로그인 인증 함수
+    async function fetchPrivateData() {
+        var statusMsg = document.getElementById('private-status-msg');
+        statusMsg.style.color = '#0056b3';
+        statusMsg.innerText = "패스키 인증을 요청 중입니다...";
+
+        try {
+            var { data: passkeys, error: pkError } = await supabase
+                .from('passkeys')
+                .select('credential_id')
+                .eq('user_id', 'user_kmkm');
+
+            if (pkError) throw pkError;
+
+            if (!passkeys || passkeys.length === 0) {
+                statusMsg.style.color = '#d9480f';
+                statusMsg.innerText = "❌ 등록된 패스키가 없습니다. 먼저 '새 패스키 등록하기'를 진행해 주세요.";
+                return;
+            }
+
+            var challenge = window.crypto.getRandomValues(new Uint8Array(32));
+            var allowCredentials = passkeys.map(function(pk) {
+                var binaryStr = atob(pk.credential_id.replace(/-/g, '+').replace(/_/g, '/'));
+                var len = binaryStr.length;
+                var bytes = new Uint8Array(len);
+                for (var i = 0; i < len; i++) {
+                    bytes[i] = binaryStr.charCodeAt(i);
+                }
+                return {
+                    id: bytes,
+                    type: 'public-key'
+                };
+            });
+
+            var publicKeyCredentialRequestOptions = {
+                challenge: challenge,
+                allowCredentials: allowCredentials,
+                userVerification: "preferred",
+                timeout: 60000
+            };
+
+            var assertion = await navigator.credentials.get({
+                publicKey: publicKeyCredentialRequestOptions
+            });
+
+            if (assertion) {
+                statusMsg.style.color = '#2b8a3e';
+                statusMsg.innerText = "🔑 패스키 인증 성공!";
+
+                document.getElementById('private-locked').style.display = 'none';
+                document.getElementById('private-content').style.display = 'block';
+            }
+
+        } catch (err) {
+            console.error(err);
+            statusMsg.style.color = '#d9480f';
+            if (err.name === 'NotAllowedError') {
+                statusMsg.innerText = "❌ 패스키 인증이 취소되었습니다.";
+            } else {
+                statusMsg.innerText = "❌ 패스키 인증 실패: " + err.message;
+            }
         }
-    </script>
+    }
+</script>
+
 </body>
 </html>
