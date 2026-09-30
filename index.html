@@ -136,7 +136,6 @@
 </div>
 
 <script>
-    // var를 사용하여 변수 중복 선언 시에도 문법 에러가 발생하지 않도록 처리
     var SUPABASE_URL = 'https://qbmyimkyzxnfqgkfyoqc.supabase.co';
     var SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFibXlpbWt5enhuZnFna2Z5b3FjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTA3NDA4NTIsImV4cCI6MjEwNjMxNjg1Mn0.eDlx9irK4wKuYv3HJ7SSwurZHF6ikw2LfAoZEnFv3og';
     var supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
@@ -168,6 +167,7 @@
         return btoa(string).replace(/\+/g, '-').replace(/\//g, '_').replace(/=/g, '');
     }
 
+    // 1. 패스키 등록 함수
     async function registerPasskey() {
         var statusMsg = document.getElementById('private-status-msg');
         statusMsg.style.color = '#0056b3';
@@ -183,9 +183,8 @@
                 .select();
 
             if (chalError) throw chalError;
-            console.log("생성된 Challenge:", challengeStr);
 
-            statusMsg.innerText = "기기 패스키 인증을 진행해 주세요...";
+            statusMsg.innerText = "기기/구글 계정 패스키 인증을 진행해 주세요...";
 
             var publicKeyCredentialCreationOptions = {
                 challenge: rawChallenge,
@@ -195,7 +194,7 @@
                     name: "kyeongmin@example.com",
                     displayName: "김경민"
                 },
-                pubKeyCredParams: [{ alg: -7, type: "public-key" }],
+                pubKeyCredParams: [{ alg: -7, type: "public-key" }, { alg: -257, type: "public-key" }],
                 authenticatorSelection: { userVerification: "preferred" },
                 timeout: 60000
             };
@@ -204,10 +203,10 @@
                 publicKey: publicKeyCredentialCreationOptions
             });
 
-            var passkeyName = prompt("이 패스키의 이름을 입력하세요 (예: 경민의 Windows Hello):", "내 개인 기기");
+            var passkeyName = prompt("이 패스키의 이름을 입력하세요:", "구글 계정 패스키");
             if (!passkeyName) {
                 statusMsg.style.color = '#d9480f';
-                statusMsg.innerText = "등록이 취소되었습니다. (이름 미입력)";
+                statusMsg.innerText = "등록이 취소되었습니다.";
                 return;
             }
 
@@ -226,24 +225,92 @@
             if (passkeyError) throw passkeyError;
 
             statusMsg.style.color = '#2b8a3e';
-            statusMsg.innerText = "✅ 패스키 [" + passkeyName + "] 등록이 완료되었습니다!";
+            statusMsg.innerText = "✅ 패스키 [" + passkeyName + "] 등록 완료! 이제 아래 로그인 버튼을 눌러보세요.";
 
         } catch (err) {
             console.error(err);
             statusMsg.style.color = '#d9480f';
-
             if (err.name === 'NotAllowedError') {
-                statusMsg.innerText = "❌ 패스키 등록이 취소되었습니다. (서버에 아무것도 저장되지 않음)";
+                statusMsg.innerText = "❌ 패스키 등록이 취소되었습니다.";
             } else {
                 statusMsg.innerText = "❌ 패스키 등록 실패: " + err.message;
             }
         }
     }
 
+    // 2. 패스키 로그인 인증 함수 (실제 패스키 인증 창을 띄움)
     async function fetchPrivateData() {
         var statusMsg = document.getElementById('private-status-msg');
-        statusMsg.style.color = '#d9480f';
-        statusMsg.innerText = "[접근 거부 - HTTP 401/403] 패스키 로그인 인증이 필요합니다.";
+        statusMsg.style.color = '#0056b3';
+        statusMsg.innerText = "패스키 인증을 요청 중입니다...";
+
+        try {
+            // 등록된 패스키가 있는지 DB에서 조회
+            var { data: passkeys, error: pkError } = await supabase
+                .from('passkeys')
+                .select('credential_id')
+                .eq('user_id', 'user_kmkm');
+
+            if (pkError) throw pkError;
+
+            if (!passkeys || passkeys.length === 0) {
+                statusMsg.style.color = '#d9480f';
+                statusMsg.innerText = "❌ 등록된 패스키가 없습니다. 먼저 '새 패스키 등록하기'를 진행해 주세요.";
+                return;
+            }
+
+            // 구글 계정/브라우저에 저장된 패스키로 인증 팝업 띄우기
+            var challenge = window.crypto.getRandomValues(new Uint8Array(32));
+            var allowCredentials = passkeys.map(function(pk) {
+                // base64url을 Uint8Array로 변환
+                var binaryStr = atob(pk.credential_id.replace(/-/g, '+').replace(/_/g, '/'));
+                var len = binaryStr.length;
+                var bytes = new Uint8Array(len);
+                for (var i = 0; i < len; i++) {
+                    bytes[i] = binaryStr.charCodeAt(i);
+                }
+                return {
+                    id: bytes,
+                    type: 'public-key'
+                };
+            });
+
+            var publicKeyCredentialRequestOptions = {
+                challenge: challenge,
+                allowCredentials: allowCredentials,
+                userVerification: "preferred",
+                timeout: 60000
+            };
+
+            // 🔑 여기서 브라우저 및 구글 계정 패스키 선택 창(팝업)이 열립니다!
+            var assertion = await navigator.credentials.get({
+                publicKey: publicKeyCredentialRequestOptions
+            });
+
+            if (assertion) {
+                statusMsg.style.color = '#2b8a3e';
+                statusMsg.innerText = "🔑 패스키 인증 성공!";
+
+                // 인증 성공 시 비공개 영역 표시
+                document.getElementById('private-locked').style.display = 'none';
+                document.getElementById('private-content').style.display = 'block';
+
+                var privateList = document.getElementById('private-list');
+                privateList.innerHTML = 
+                    "<li><strong>보안 프로젝트 소스코드:</strong> <a href='#'>WebHackLab_Advanced_v2.zip</a></li>" +
+                    "<li><strong>서버 인프라 설계서:</strong> <a href='#'>AWS_Security_Architecture.pdf</a></li>" +
+                    "<li><strong>개인 취약점 데이터베이스:</strong> CVE 및 Zero-day 분석 리포트</li>";
+            }
+
+        } catch (err) {
+            console.error(err);
+            statusMsg.style.color = '#d9480f';
+            if (err.name === 'NotAllowedError') {
+                statusMsg.innerText = "❌ 패스키 인증이 취소되었습니다.";
+            } else {
+                statusMsg.innerText = "❌ 패스키 인증 실패: " + err.message;
+            }
+        }
     }
 </script>
 
